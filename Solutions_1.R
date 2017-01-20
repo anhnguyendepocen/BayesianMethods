@@ -1,4 +1,4 @@
-# Solutions chapter 2
+# Solutions exercise 1 - reconstructing genomes from sequencing data
 
 source("functions.R")
 
@@ -6,7 +6,7 @@ bases <- "AAAT"
 
 # calculate genotype posterior probability with different priors:
 
-P(G=AA|D) = P(D|G=AA) * P(G=AA) / P(D)
+# P(G=AA|D) = P(D|G=AA) * P(G=AA) / P(D)
 
 # A) uniform prior:  P(G=AA) = P(G=AT) = P(G=TT) = 1/3
 
