@@ -1,3 +1,0 @@
-# Exercise chapter 2
-
-
