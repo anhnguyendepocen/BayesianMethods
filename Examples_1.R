@@ -1,4 +1,4 @@
-# Examples chapter 2
+# Examples 1 - Bayesian concepts
 
 ## normal/normal model
 
