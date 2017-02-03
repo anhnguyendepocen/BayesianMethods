@@ -89,6 +89,33 @@ fold2DSFS<-function(unfolded) {
 
 }
 
+# FST estimator
+reynolds<-function(pl1,pl2,n1,n2) {
+
+        # this functions compute the FST estimator from Reynolds et al. from sample allele frequencies
+        somma=sommaden=0;
+
+        alfa1=1-((pl1^2)+((1-pl1)^2))
+        alfa2=1-((pl2^2)+((1-pl2)^2))
+        Al = (0.5*(((pl1-pl2)^2)+(((1-pl1)-(1-pl2))^2))) - (((n1+n2)*(n1*alfa1+n2*alfa2)) / ((4*n1*n2)*(n1+n2-1)))
+        AlBl= (0.5*(((pl1-pl2)^2)+(((1-pl1)-(1-pl2))^2))) + (((4*n1*n2 - n1 - n2)*(n1*alfa1 + n2*alfa2)) / ((4*n1*n2)*(n1+n2-1)))
+
+        if (!is.na(Al) & !is.na(AlBl)) {
+                somma=somma+Al
+                sommaden=sommaden+AlBl
+        }
+
+        if (somma==0 & sommaden==0) {
+                reyn=NA
+        } else {
+                reyn=somma/sommaden
+                if(reyn<0) reyn=0
+        }
+
+        c(somma, sommaden, reyn)
+
+}
+
 
 # calculate FST
 doFST<-function(sfs) {
@@ -115,35 +142,61 @@ doFST<-function(sfs) {
 }
 
 
-# FST estimator
-reynolds<-function(pl1,pl2,n1,n2) {
+# calculate summary statistics
+calcSummaryStats<-function(sfs) {
 
-	# this functions compute the FST estimator from Reynolds et al. from sample allele frequencies
-	somma=sommaden=0;
+        # this function compute summary statistics from a 2D-SFS
 
-	alfa1=1-((pl1^2)+((1-pl1)^2))
-	alfa2=1-((pl2^2)+((1-pl2)^2))
-	Al = (0.5*(((pl1-pl2)^2)+(((1-pl1)-(1-pl2))^2))) - (((n1+n2)*(n1*alfa1+n2*alfa2)) / ((4*n1*n2)*(n1+n2-1)))
-	AlBl= (0.5*(((pl1-pl2)^2)+(((1-pl1)-(1-pl2))^2))) + (((4*n1*n2 - n1 - n2)*(n1*alfa1 + n2*alfa2)) / ((4*n1*n2)*(n1+n2-1)))
+        sfs <- sfs/sum(sfs, na.rm=T)
+        nind1 <- (nrow(sfs)-1)/2
+        nind2 <- (ncol(sfs)-1)/2
 
-	if (!is.na(Al) & !is.na(AlBl)) {
-  		somma=somma+Al
-  		sommaden=sommaden+AlBl
- 	}
+	# fst
+	fst <- doFST(sfs)
 
-	if (somma==0 & sommaden==0) {
-      		reyn=NA
- 	} else {
-        	reyn=somma/sommaden
-        	if(reyn<0) reyn=0
- 	}
+	sfs1 <- apply(X=sfs, MAR=1, FUN=sum, na.rm=T)
+	sfs2 <- apply(X=sfs, MAR=2, FUN=sum, na.rm=T)
 
- 	c(somma, sommaden, reyn)
+	# Pi
+	pivar1 <- 0
+	for (i in 1:length(sfs1)) {
+		j <- i-1
+		pivar1 <- pivar1 + (sfs1[i]*j*(2*nind1-j)) 	
+	}
+	pivar1 <- pivar1/choose(2*nind1,2)
+
+	pivar2 <- 0
+        for (i in 1:length(sfs2)) {
+                j <- i-1
+                pivar2 <- pivar2 + (sfs2[i]*j*(2*nind2-j))   
+        }
+	pivar2 <- pivar2/choose(2*nind2,2)
+
+	# singletons
+	sing1 <- sum(sfs[2,], na.rm=T)
+	sing2 <- sum(sfs[,2], na.rm=T)
+
+	# doubletons
+	doub1 <- sum(sfs[3,], na.rm=T)
+        doub2 <- sum(sfs[,3], na.rm=T)
+
+	# proportion of equal frequency
+	pef <- 0
+	for (i in 2:13) pef <- pef + as.numeric(sfs[i,i])
+
+	# proportion of unequal frequency
+	puf <- 1-pef
+
+	ss <- c(fst, pivar1, pivar2, sing1, sing2, doub1, doub2, pef, puf)
+	names(ss) <- c("fst", "pivar1", "pivar2", "sing1", "sing2", "doub1", "doub2", "pef", "puf")
+
+	ss
 
 }
 
 
-fromMStoSFSwith1site<-function(msfile, nr_repetitions, nr_chroms_pop1, nr_chroms_pop2 ) {
+# read simulations
+fromMStoSFS<-function(msfile, nr_repetitions, nr_chroms_pop1, nr_chroms_pop2, fold=TRUE) {
 
 	# this functions read ms output file (if only 1 site is simulated) and returns a matrix containing the 2D-SFS
 	# originally written by S.D. Gopal
@@ -173,13 +226,37 @@ fromMStoSFSwith1site<-function(msfile, nr_repetitions, nr_chroms_pop1, nr_chroms
 
         }
 
+
+	# fold
+	if (fold) {
+		sfs<-fold2DSFS(sfs)
+		sfs[1,1]=NA
+	}
+
         sfs
 
 
 }
 
 
+# simulate data
+simulate <- function(T, M, nr_snps, ms_dir, fout) {
 
+	# convert to coalescent units
+	gen_time <- 8.423
+	ref_pop_size <- 68000
+	Tcoal <- T/(gen_time*ref_pop_size*4)
+
+	# initialise
+	cat("", file=fout)        
+
+	# ms command
+	ms.command <- paste(ms_dir, "50", nr_snps, "-s 1 -I 2 36 14 -n 1 1 -n 2 6.8 -en 0.02269 1 0.07353 -en 0.05281 2 0.2941 -em 0.06459 1 2", M, "-em 0.1392 1 2 0 -en 0.1392 1 0.2941 -ej", Tcoal, "2 1 -en 0.3924 1 1.809 >", fout)
+
+	# run ms
+	system(ms.command)
+
+}
 
 
 
