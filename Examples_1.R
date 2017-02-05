@@ -1,4 +1,4 @@
-# Examples 1 - Bayesian concepts
+# Examples 1 - Bayesian (thinking &) concepts
 
 ## normal/normal model
 
@@ -121,5 +121,39 @@ x <- seq(80,110,0.1)
 plot(x=x, dnorm(x=x, mean=mu, sd=sqrt(sigma2)),  
 type="l", lty=1, ylab="Density", xlab=expression(theta),
 main=expression(pi(theta)))
+
+## Poisson
+theta <- 4
+y <- seq(0, 20, 1)
+plot(x=y, dpois(x=y, lambda=theta), type="p", lty=1, xlab=expression(y), main=expression(theta~"="~4), ylab=expression(p(Y~"="~y~"|"~theta)))
+
+## Gamma
+alpha <- c(0.5,2,10)
+beta <- c(0.5,2)
+thetas <- seq(0, 20, 0.1)
+mycolors <- topo.colors(6)
+plot(x=thetas, dgamma(x=thetas, shape=alpha[1], scale=beta[1]), type="l", lty=1, xlab=expression(theta), main="Gamma", ylab=expression(pi(theta)), ylim=c(0,1.0), col=mycolors[1], lwd=2)
+index <- 0
+for (i in alpha) {
+	for (j in beta) {
+    	index <- index+1
+    	points(x=thetas, dgamma(x=thetas, shape=i, scale=j), col=mycolors[index], ty="l", lwd=2)
+    }
+}
+names <- cbind(rep(alpha,each=2),rep(beta))
+legend(x="topright", legend=apply(FUN=paste, MAR=1, X=names, sep="", collapse=", "), col=mycolors, lty=1, lwd=2)
+
+## Gamma posterior
+alpha <- 3
+beta <- 1
+theta <- seq(0, 20, 0.1)
+prior <- dgamma(x=theta, shape=alpha, scale=beta)
+y <- 4
+posterior <- dgamma(x=theta, shape=y+alpha, scale=1/(1+1/beta))
+plot(x=theta, y=posterior, xlab=expression(theta), ylab="Density", type="l")
+lines(theta, prior, lty=3)
+postdraw <- rgamma(n=1e5, shape=y+alpha, scale=1/(1+1/beta))
+histdraw <- hist(postdraw, breaks=20, plot=F)
+lines(histdraw, lty=3, col="grey", freq=F)
 
 
