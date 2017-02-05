@@ -114,3 +114,12 @@ y_sampled_2 <- rnorm(n=1e6, mean=postMean, sd=sqrt(postVar))
 hist(y_sampled_2, breaks=20, freq=F, lty=2, col="grey", ylim=c(0,1.2), xlim=c(2,8), sub="1e6 samples", main=expression(p(theta~"|"~y)), xlab=expression(theta))
 points(x=x, y=dnorm(x=x, mean=postMean, sd=sqrt(postVar)), type="l", lty=1, ylab="Density", xlab=expression(theta), main=expression(p(theta~"|"~y)), sub="1e6 samples")
 
+## elicited prior
+mu <- 88
+sigma2 <- 10
+x <- seq(80,110,0.1)
+plot(x=x, dnorm(x=x, mean=mu, sd=sqrt(sigma2)),  
+type="l", lty=1, ylab="Density", xlab=expression(theta),
+main=expression(pi(theta)))
+
+
