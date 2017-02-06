@@ -156,4 +156,8 @@ postdraw <- rgamma(n=1e5, shape=y+alpha, scale=1/(1+1/beta))
 histdraw <- hist(postdraw, breaks=20, plot=F)
 lines(histdraw, lty=3, col="grey", freq=F)
 
+## Uniform
+theta <- seq(0, 100, 0.1)
+prior <- dunif(x=theta, min=0, max=100)
+plot(x=theta, y=prior, xlab=expression(theta), ylab="Density", type="l")
 
