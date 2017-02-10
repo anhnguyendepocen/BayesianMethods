@@ -17,3 +17,14 @@ beta <- 1
 posterior <- dgamma(x=theta, shape=alpha, scale=beta)
 plot(x=theta, y=posterior, xlab=expression(theta), ylab="Posterior density", type="l")
 
+abline(h=0.1, lty=3)
+
+library(coda)
+x <- rgamma(n=1e5, shape=alpha, scale=beta)
+hpd <- HPDinterval(as.mcmc(x), prob=0.87)
+abline(v=hpd, lty=1)
+
+a <- 1-0.87
+eqi <- quantile(x, probs=c( a/2, 1-(a/2) ) )
+abline(v=eqi, lty=2)
+
