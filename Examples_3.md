@@ -1,1 +1,0 @@
-# Examples chapter 3
