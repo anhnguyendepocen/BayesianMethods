@@ -53,4 +53,12 @@ loglikes_F + log(priors_C)
 
 # PS: if you want to calculate proper probability (in log) you have to approximate the sum of logs, see https://en.wikipedia.org/wiki/List_of_logarithmic_identities
 
+# G) how would you calculate the genotype posterior probabilities assuming that the inbreeding coefficient is not known but it can have two possible values, 0 with probability 0.7 and 0.2 with probability 0.3?
+
+
+
+
+
+
+
 
