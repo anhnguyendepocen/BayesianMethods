@@ -1,7 +1,11 @@
 # Introduction to Bayesian methods in ecology and evolution
 
     git clone https://github.com/mfumagalli/BayesianMethods.git
-    cd BayesianMethods
+    
+    mkdir Bayesian
+    cd Bayesian
+    cp ../BayesianMethods/functions.R .
+    
 
 Requirements: 
 * R with packages: coda, abc, grid, maps, spam, fields.
