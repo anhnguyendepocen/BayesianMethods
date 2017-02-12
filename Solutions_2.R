@@ -68,7 +68,6 @@ y <- dbeta(p, shape1=alpha, shape2=beta)
 points(x=p, y=y, type="l", lty=2)
 percs[2,1:4] <- c(qbeta(p=c(0.025,0.5,0.975), shape1=alpha, shape2=beta), pbeta(th, shape1=alpha, shape2=beta, lower.tail=FALSE) )
 
-# THESE BF MAY BE WRONG!!!
 
 post1 <- pbeta(th, shape1=alpha, shape2=beta, lower.tail=FALSE)
 prior1 <- pbeta(th, shape1=0.1, shape2=0.1, lower.tail=FALSE)
