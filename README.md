@@ -18,7 +18,14 @@ Examples, exercises and solutions.
     3. Bayesian computation
     4. Approximate Bayesian Computation
     
-    
+Journal club:
+* RayN_et_al_2010
+* ejhg
+
+
+
+
+
 
 
 
