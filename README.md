@@ -6,6 +6,11 @@
     cd Bayesian
     cp ../BayesianMethods/functions.R .
     
+Make sure you have the latest version.
+
+    cd BayesianMethods
+    git pull
+    cd ..
 
 Requirements: 
 * R with packages: coda, abc, grid, maps, spam, fields.
